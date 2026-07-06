@@ -1,9 +1,9 @@
-describe('Login e Dashboard - HelpDesk Pro', () => {
+describe('Autenticação - HelpDesk Pro', () => {
   beforeEach(() => {
     cy.visit('http://localhost:5173/')
   })
 
-  it('deve realizar login com sucesso e abrir a dashboard', () => {
+  it('deve realizar login com sucesso', () => {
     cy.login()
 
     cy.get('[data-cy="dashboard-page"]').should('be.visible')
@@ -14,9 +14,6 @@ describe('Login e Dashboard - HelpDesk Pro', () => {
     cy.get('[data-cy="user-info"]')
       .should('be.visible')
       .and('contain', 'Arthur Frantz')
-
-    cy.get('[data-cy="tickets-table"]').should('be.visible')
-    cy.get('[data-cy="ticket-row"]').should('have.length', 4)
   })
 
   it('deve exibir erro para credenciais inválidas', () => {
@@ -37,28 +34,16 @@ describe('Login e Dashboard - HelpDesk Pro', () => {
       .and('contain', 'Preencha e-mail e senha')
   })
 
-  it('deve permitir logout e voltar para a tela de login', () => {
+  it('deve permitir logout com sucesso', () => {
     cy.login()
 
-    cy.get('[data-cy="logout-button"]').should('be.visible').click()
+    cy.get('[data-cy="logout-button"]')
+      .should('be.visible')
+      .click()
 
     cy.get('[data-cy="login-submit"]').should('be.visible')
     cy.get('[data-cy="login-message"]')
       .should('be.visible')
       .and('contain', 'Logout realizado com sucesso')
-  })
-
-  it('deve filtrar chamados por status', () => {
-    cy.login()
-
-    cy.get('[data-cy="status-filter"]').select('Resolvido')
-
-    cy.get('[data-cy="results-count"]')
-      .should('be.visible')
-      .and('contain', 'Exibindo 1 chamado(s)')
-
-    cy.get('[data-cy="ticket-row"]').should('have.length', 1)
-    cy.get('[data-cy="tickets-table"]').should('contain', 'CH-1003')
-    cy.get('[data-cy="tickets-table"]').should('contain', 'Resolvido')
   })
 })

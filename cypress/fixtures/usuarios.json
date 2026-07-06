@@ -1,0 +1,10 @@
+{
+  "gestor": {
+    "email": "gestor@helpdesk.com",
+    "password": "123456"
+  },
+  "invalido": {
+    "email": "teste@teste.com",
+    "password": "111111"
+  }
+}
