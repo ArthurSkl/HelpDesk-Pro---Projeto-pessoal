@@ -7,11 +7,22 @@ Cypress.Commands.add('login', (email = 'gestor@helpdesk.com', password = '123456
     },
   }).as('loginRequest')
 
+  cy.fixture('tickets').then((tickets) => {
+    cy.intercept('GET', '/api/tickets', tickets).as('getTickets')
+  })
+  cy.fixture('references').then((refs) => {
+    cy.intercept('GET', '/api/references/statuses', refs.statuses).as('getStatuses')
+    cy.intercept('GET', '/api/references/priorities', refs.priorities).as('getPriorities')
+    cy.intercept('GET', '/api/references/categories', refs.categories).as('getCategories')
+    cy.intercept('GET', '/api/references/users', refs.users).as('getUsers')
+  })
+
   cy.visit('/login')
   cy.get('[data-cy="login-email"]').clear().type(email)
   cy.get('[data-cy="login-password"]').clear().type(password)
   cy.get('[data-cy="login-submit"]').click()
   cy.wait('@loginRequest')
+  cy.wait('@getTickets')
   cy.url().should('include', '/dashboard')
   cy.get('[data-cy="dashboard-page"]').should('be.visible')
 })
