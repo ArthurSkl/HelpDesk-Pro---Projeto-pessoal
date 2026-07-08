@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { authApi } from '../api'
 
@@ -11,6 +11,9 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [nome, setNome] = useState('')
   const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [animating, setAnimating] = useState(false)
+  const formRef = useRef(null)
 
   useEffect(() => {
     if (location.state?.message) {
@@ -26,6 +29,7 @@ function LoginPage() {
       return
     }
 
+    setSubmitting(true)
     try {
       const res = await authApi.login(email, password)
       const usuario = {
@@ -41,6 +45,8 @@ function LoginPage() {
       navigate('/dashboard')
     } catch (err) {
       setMessage(err.message)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -57,21 +63,42 @@ function LoginPage() {
       return
     }
 
+    setSubmitting(true)
     try {
       await authApi.register({ name: nome, email, password })
       setMessage('Conta criada com sucesso! Faça login.')
       setNome('')
       setEmail('')
       setPassword('')
-      setModo('login')
+      await alternarModo()
     } catch (err) {
       setMessage(err.message)
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  const alternarModo = () => {
-    setModo(modo === 'login' ? 'register' : 'login')
+  const alternarModo = async () => {
+    if (animating) return
+    setAnimating(true)
     setMessage('')
+
+    if (formRef.current) {
+      formRef.current.style.transition = 'all 0.25s ease'
+      formRef.current.style.opacity = '0'
+      formRef.current.style.transform = 'translateY(8px)'
+    }
+
+    await new Promise(r => setTimeout(r, 200))
+    setModo(modo === 'login' ? 'register' : 'login')
+    await new Promise(r => setTimeout(r, 50))
+
+    if (formRef.current) {
+      formRef.current.style.opacity = '1'
+      formRef.current.style.transform = 'translateY(0)'
+    }
+
+    setTimeout(() => setAnimating(false), 250)
   }
 
   return (
@@ -79,76 +106,85 @@ function LoginPage() {
       <section className="login-card">
         <p className="eyebrow">Projeto para entrevista</p>
         <h1>HelpDesk Pro</h1>
-        <p className="subtitle">
-          Sistema de gestão de chamados com automação E2E usando Cypress.
+        <p className="subtitle" key={modo}>
+          {modo === 'login'
+            ? 'Faça login para gerenciar seus chamados.'
+            : 'Crie sua conta e comece a usar o sistema.'}
         </p>
 
-        {modo === 'login' ? (
-          <form onSubmit={handleLogin} className="login-form">
-            <label htmlFor="email">E-mail</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              data-cy="login-email"
-            />
+        <div ref={formRef} style={{ transition: 'all 0.25s ease' }}>
+          {modo === 'login' ? (
+            <form onSubmit={handleLogin} className="login-form">
+              <label htmlFor="email">E-mail</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={submitting}
+                data-cy="login-email"
+              />
 
-            <label htmlFor="password">Senha</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="******"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              data-cy="login-password"
-            />
+              <label htmlFor="password">Senha</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="******"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={submitting}
+                data-cy="login-password"
+              />
 
-            <button type="submit" data-cy="login-submit">
-              Entrar
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleRegister} className="login-form">
-            <label htmlFor="regNome">Nome</label>
-            <input
-              id="regNome"
-              type="text"
-              placeholder="Seu nome"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              data-cy="reg-name"
-            />
+              <button type="submit" disabled={submitting} data-cy="login-submit">
+                {submitting ? 'Entrando...' : 'Entrar'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister} className="login-form">
+              <label htmlFor="regNome">Nome</label>
+              <input
+                id="regNome"
+                type="text"
+                placeholder="Seu nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                disabled={submitting}
+                data-cy="reg-name"
+              />
 
-            <label htmlFor="regEmail">E-mail</label>
-            <input
-              id="regEmail"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              data-cy="reg-email"
-            />
+              <label htmlFor="regEmail">E-mail</label>
+              <input
+                id="regEmail"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={submitting}
+                data-cy="reg-email"
+              />
 
-            <label htmlFor="regPassword">Senha</label>
-            <input
-              id="regPassword"
-              type="password"
-              placeholder="Mínimo 4 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              data-cy="reg-password"
-            />
+              <label htmlFor="regPassword">Senha</label>
+              <input
+                id="regPassword"
+                type="password"
+                placeholder="Mínimo 4 caracteres"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={submitting}
+                data-cy="reg-password"
+              />
 
-            <button type="submit" data-cy="reg-submit">
-              Criar Conta
-            </button>
-          </form>
-        )}
+              <button type="submit" disabled={submitting} data-cy="reg-submit">
+                {submitting ? 'Criando...' : 'Criar Conta'}
+              </button>
+            </form>
+          )}
+        </div>
 
         {message && (
-          <p className="message" data-cy="login-message">
+          <p className="message" data-cy="login-message" key={message}>
             {message}
           </p>
         )}
@@ -161,6 +197,7 @@ function LoginPage() {
                 type="button"
                 className="link-btn"
                 onClick={alternarModo}
+                disabled={animating}
                 data-cy="toggle-register"
               >
                 Cadastre-se
@@ -173,6 +210,7 @@ function LoginPage() {
                 type="button"
                 className="link-btn"
                 onClick={alternarModo}
+                disabled={animating}
                 data-cy="toggle-login"
               >
                 Faça login

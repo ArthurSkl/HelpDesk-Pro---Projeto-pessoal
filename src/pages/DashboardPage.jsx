@@ -2,6 +2,32 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ticketsApi } from '../api'
 
+function DashboardSkeleton() {
+  return (
+    <main className="app dashboard-page" data-cy="dashboard-page">
+      <header className="topbar">
+        <div>
+          <div className="skeleton skeleton-text" style={{ width: 120, marginBottom: 8 }} />
+          <div className="skeleton skeleton-text" style={{ width: 200, height: 24 }} />
+        </div>
+      </header>
+
+      <section className="metrics">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton skeleton-metric" />
+        ))}
+      </section>
+
+      <section className="tickets-section">
+        <div className="skeleton skeleton-text" style={{ width: 140, marginBottom: 16 }} />
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className="skeleton skeleton-row" />
+        ))}
+      </section>
+    </main>
+  )
+}
+
 function DashboardPage() {
   const navigate = useNavigate()
   const [tickets, setTickets] = useState([])
@@ -57,18 +83,16 @@ function DashboardPage() {
     return `badge status-${status.toLowerCase().replaceAll(' ', '-')}`
   }
 
-  if (loading && tickets.length === 0) {
-    return (
-      <main className="app dashboard-page" data-cy="dashboard-page">
-        <p className="loading-text">Carregando chamados...</p>
-      </main>
-    )
-  }
+  if (loading) return <DashboardSkeleton />
 
   if (error && tickets.length === 0) {
     return (
       <main className="app dashboard-page" data-cy="dashboard-page">
-        <p className="error-text">Erro ao carregar chamados: {error}</p>
+        <div className="error-state">
+          <div className="error-icon">!</div>
+          <p className="error-text">{error}</p>
+          <button className="btn-new" onClick={carregar}>Tentar novamente</button>
+        </div>
       </main>
     )
   }
@@ -99,28 +123,28 @@ function DashboardPage() {
 
       <section className="metrics">
         <div className="metric-card" data-cy="metric-abertos">
-          <span>Abertos</span>
+          <span>📋 Abertos</span>
           <strong>{metricas.abertos}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-atendimento">
-          <span>Em atendimento</span>
+          <span>🔄 Em atendimento</span>
           <strong>{metricas.atendimento}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-resolvidos">
-          <span>Resolvidos</span>
+          <span>✅ Resolvidos</span>
           <strong>{metricas.resolvidos}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-encerrados">
-          <span>Encerrados</span>
+          <span>📁 Encerrados</span>
           <strong>{metricas.encerrados}</strong>
         </div>
       </section>
 
       <section className="tickets-section">
-        <div className="section-header filters-header">
+        <div className="section-header">
           <div>
             <p className="eyebrow">Operação</p>
             <h2 data-cy="tickets-title">Chamados recentes</h2>
@@ -154,7 +178,7 @@ function DashboardPage() {
         </div>
 
         <p className="results-info" data-cy="results-count">
-          Exibindo {chamadosFiltrados.length} chamado(s)
+          {chamadosFiltrados.length} chamado(s) encontrado(s)
         </p>
 
         <div className="table-wrapper">
@@ -170,14 +194,15 @@ function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {chamadosFiltrados.map((chamado) => (
+              {chamadosFiltrados.map((chamado, index) => (
                 <tr
                   key={chamado.id}
                   data-cy="ticket-row"
                   className="clickable-row"
+                  style={{ animationDelay: `${index * 0.04}s` }}
                   onClick={() => navigate(`/tickets/${chamado.id}`)}
                 >
-                  <td>{chamado.code}</td>
+                  <td><strong>{chamado.code}</strong></td>
                   <td>{chamado.title}</td>
                   <td>
                     <span className={getStatusClass(chamado.status_name)}>
