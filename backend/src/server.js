@@ -36,9 +36,10 @@ app.get('/tickets', async (req, res) => {
 });
 
 app.post('/tickets', async (req, res) => {
+  const client = await pool.connect();
+
   try {
     const {
-      code,
       title,
       description,
       requester_id,
@@ -48,16 +49,17 @@ app.post('/tickets', async (req, res) => {
       priority_id
     } = req.body;
 
-    if (!code || !title || !description || !requester_id || !category_id || !status_id || !priority_id) {
+    if (!title || !description || !requester_id || !category_id || !status_id || !priority_id) {
       return res.status(400).json({
         ok: false,
         message: 'Preencha os campos obrigatórios',
       });
     }
 
-    const query = `
+    await client.query('BEGIN');
+
+    const insertQuery = `
       INSERT INTO tickets (
-        code,
         title,
         description,
         requester_id,
@@ -66,12 +68,11 @@ app.post('/tickets', async (req, res) => {
         status_id,
         priority_id
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `;
 
-    const values = [
-      code,
+    const insertValues = [
       title,
       description,
       requester_id,
@@ -81,18 +82,39 @@ app.post('/tickets', async (req, res) => {
       priority_id
     ];
 
-    const result = await pool.query(query, values);
+    const insertResult = await client.query(insertQuery, insertValues);
+    const ticket = insertResult.rows[0];
+
+    const generatedCode = `TKT-${String(ticket.id).padStart(3, '0')}`;
+
+    const updateResult = await client.query(
+      `
+      UPDATE tickets
+      SET code = $1
+      WHERE id = $2
+      RETURNING *
+      `,
+      [generatedCode, ticket.id]
+    );
+
+    await client.query('COMMIT');
 
     res.status(201).json({
       ok: true,
-      ticket: result.rows[0],
+      ticket: updateResult.rows[0],
     });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error(error);
     res.status(500).json({
       ok: false,
       message: 'Erro ao criar ticket',
+      error: error.message,
+      detail: error.detail || null,
+      code: error.code || null
     });
+  } finally {
+    client.release();
   }
 });
 

@@ -1,7 +1,6 @@
-import { defineConfig } from "cypress";
+const { defineConfig } = require("cypress");
 
-export default defineConfig({
-  projectId: 'e6z2ha',
+module.exports = defineConfig({
   allowCypressEnv: false,
 
   e2e: {
