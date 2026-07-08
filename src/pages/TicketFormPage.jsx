@@ -21,6 +21,7 @@ function TicketFormPage() {
   const defaultRequesterId = usuarioLogado.id?.toString() || '1'
 
   const [form, setForm] = useState({
+    code: '',
     title: '',
     description: '',
     requester_id: defaultRequesterId,
@@ -50,6 +51,7 @@ function TicketFormPage() {
         .then((res) => {
           const t = res.ticket
           setForm({
+            code: t.code || '',
             title: t.title || '',
             description: t.description || '',
             requester_id: t.requester_id?.toString() || usuarioLogado.id?.toString() || '',

@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "ticket": {
+    "id": 1,
+    "code": "TKT-001",
+    "title": "Computador não liga",
+    "description": "Máquina da sala 203 não apresenta sinal de energia após queda de energia ontem à noite. Já verifiquei a tomada e o cabo de força, ambos estão ok.",
+    "requester_id": 2,
+    "assignee_id": 1,
+    "category_id": 1,
+    "status_id": 1,
+    "priority_id": 3,
+    "requester_name": "Maria Souza",
+    "assignee_name": "Gestor",
+    "category_name": "Hardware",
+    "status_name": "Aberto",
+    "priority_name": "Alta",
+    "created_at": "2026-07-06T10:00:00.000Z",
+    "updated_at": "2026-07-06T10:00:00.000Z"
+  }
+}

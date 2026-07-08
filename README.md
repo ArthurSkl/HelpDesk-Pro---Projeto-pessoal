@@ -1,90 +1,150 @@
-<<<<<<< HEAD
-# React + Vite
+# HelpDesk Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema corporativo de gerenciamento de chamados (helpdesk/ticketing) com arquitetura REST + React. Construído como projeto para entrevista, demonstrando boas práticas de desenvolvimento full-stack.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+| Camada | Tecnologia |
+|--------|-----------|
+| **Frontend** | React 19 + Vite 8 + React Router 7 |
+| **Backend** | Express 5 + PostgreSQL |
+| **Autenticação** | bcryptjs (hash de senha) |
+| **Testes** | Cypress 15 (E2E com mocks) |
+| **Proxy** | Vite dev server → backend (`/api` → `:3001`) |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Funcionalidades
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# HelpDesk Pro - Projeto pessoal
+- **Autenticação** — Login e cadastro com bcryptjs, sessão via localStorage, rotas protegidas
+- **Dashboard** — Métricas em tempo real (abertos, em atendimento, resolvidos, encerrados), filtro por status, tabela com badges coloridas
+- **CRUD completo** — Criar, editar, visualizar e remover chamados com validação de campos
+- **Referências dinâmicas** — Status, prioridades, categorias e usuários carregados da API
+- **Interface moderna** — Tema escuro corporativo, glassmorphism, animações CSS, responsivo
+- **Código do chamado** — Geração automática no formato `TKT-001`, `TKT-002`...
 
-Sistema web de gestão de chamados pensado para portfólio técnico e apresentação em
-entrevistas de QA, Tester Júnior, Analista de Sistemas ou Desenvolvimento Júnior.
-Demonstrar:
-modelagem de um produto web com regras de negócio reais;
-planejamento de testes funcional e E2E;
-automação com Cypress;
-organização de documentação técnica;
-visão de qualidade de software ponta a ponta.
-Usuário solicitante
-Técnico
-Gestor
-Login e logout
-Abertura de chamado
-Edição de chamado enquanto estiver aberto ou em atendimento
-Atribuição de técnico
-Mudança de status: Aberto, Em Atendimento, Resolvido, Encerrado
-Comentários e histórico
-Filtros por status, prioridade, responsável e texto
-Dashboard com métricas básicas
-Front-end: React + Vite
-Back-end: Node.js + Express
-Banco: PostgreSQL ou SQLite para demo local
-HelpDesk Pro - Projeto para Entrevista
-Objetivo
-Escopo do sistema
-Perfis
-Funcionalidades principais
-Stack sugerida
-Testes E2E: Cypress
-Versionamento: Git + GitHub
-projeto-helpdesk-cypress/
-├── README.md
-├── docs/
-│ ├── 01-visao-geral.md
-│ ├── 02-requisitos.md
-│ ├── 03-plano-de-testes.md
-│ ├── 04-casos-de-teste.md
-│ ├── 05-matriz-de-rastreabilidade.md
-│ ├── 06-relatorio-de-bugs.md
-│ └── 07-roteiro-de-apresentacao.md
+---
+
+## Estrutura do projeto
+
+```
+HelpDesk Pro/
+├── backend/
+│   ├── controllers/       # Lógica das rotas (tickets, auth, references)
+│   ├── routes/            # Definição das rotas REST
+│   ├── src/
+│   │   ├── config/db.js   # Pool PostgreSQL
+│   │   └── models/        # Ticket, User, Reference (queries SQL)
+│   └── seed.js            # Cria usuário gestor no banco
+├── src/
+│   ├── api/index.js       # Cliente HTTP (request, ticketsApi, authApi, referencesApi)
+│   ├── components/        # ProtectedRoute
+│   ├── pages/             # LoginPage, DashboardPage, TicketFormPage, TicketDetailsPage
+│   ├── App.css            # Estilos globais (1200+ linhas)
+│   ├── index.css          # Fonte Inter, scrollbar customizada
+│   └── main.jsx           # Entry point React
 ├── cypress/
-│ ├── e2e/
-│ │ ├── auth.cy.js
-│ │ ├── chamados.cy.js
-│ │ ├── permissoes.cy.js
-│ │ └── smoke.cy.js
-│ ├── fixtures/
-│ │ └── usuarios.json
-│ └── support/
-│ ├── commands.js
-│ └── e2e.js
-└── src/
-testes independentes entre si;
-uso de seletores data-* para reduzir fragilidade;
-evitar cy.wait(tempo) arbitrário;
-resetar estado antes de cada teste;
-usar baseUrl na configuração;
-centralizar comandos reutilizáveis.
+│   ├── e2e/               # Testes: auth, dashboard, tickets, navigation
+│   ├── fixtures/          # Dados mock (tickets, ticket, references, auth)
+│   └── support/           # Comandos customizados (login, intercepts)
+├── cypress.config.js      # Config Cypress (baseUrl, viewport)
+├── vite.config.js         # Proxy /api → backend :3001
+└── package.json           # Scripts dev, build, cy:open, cy:run
+```
 
-1. Criar telas principais no front-end.
-2. Implementar API básica com autenticação simples.
-3. Adicionar atributos data-cy nos elementos críticos.
-4. Configurar Cypress.
-5. Implementar suíte smoke.
-6. Evoluir para regressão funcional.
-Estrutura sugerida
-Boas práticas Cypress aplicadas neste projeto
-Próximos passos de implementação
-7. Publicar código no GitHub com prints e evidências.
->>>>>>> b90b635332758191d219c48fd5d020ebddeba50f
+---
+
+## Como rodar
+
+### 1. Banco de dados
+
+Crie um banco PostgreSQL chamado `Help-Desk` e execute o script de schema (tabelas `users`, `tickets`, `ticket_statuses`, `ticket_priorities`, `ticket_categories`).
+
+```bash
+# Config padrão esperada:
+# host: localhost
+# port: 5432
+# user: postgres
+# password: 123
+# database: Help-Desk
+```
+
+### 2. Backend
+
+```bash
+cd backend
+npm install
+npm run seed    # Cria gestor@helpdesk.com / 123456
+npm start       # Inicia na porta 3001
+```
+
+### 3. Frontend
+
+```bash
+# Na raiz do projeto
+npm install
+npm run dev     # Inicia na porta 5173
+```
+
+Acesse `http://localhost:5173` e faça login com:
+
+> **E-mail:** gestor@helpdesk.com  
+> **Senha:** 123456
+
+---
+
+## Testes
+
+Os testes usam `cy.intercept()` para mockar todas as APIs — rodam **sem dependência do backend**.
+
+```bash
+# Terminal (headless)
+npm run cy:run
+
+# Interface gráfica
+npm run cy:open
+```
+
+### Cobertura (47 testes)
+
+| Arquivo | Testes | O que valida |
+|---------|--------|--------------|
+| `auth.cy.js` | 14 | Login, register, logout, toggle, validações, redirect de rotas protegidas, erro de credenciais, e-mail duplicado, senha curta |
+| `dashboard.cy.js` | 15 | Métricas, filtro por cada status, contagem, badges, navegação para novo/detalhes/edição, remover |
+| `navigation.cy.js` | 7 | Redirect `/` → `/login`, 404, sessão entre páginas, localStorage inválido, JSON malformado |
+| `tickets.cy.js` | 11 | CRUD completo: criar com selects populados, editar com dados carregados, visualizar detalhes, remover |
+
+---
+
+## API
+
+### Autenticação
+```
+POST /auth/login    { email, password }   → { ok, user }
+POST /auth/register { name, email, password, role? } → { ok, user }
+```
+
+### Tickets
+```
+GET    /tickets       → Ticket[]
+GET    /tickets/:id   → { ok, ticket }
+POST   /tickets       → { ok, ticket }
+PUT    /tickets/:id   → { ok, ticket }
+DELETE /tickets/:id   → { ok, message }
+```
+
+### Referências
+```
+GET /references/statuses
+GET /references/priorities
+GET /references/categories
+GET /references/users
+```
+
+---
+
+## Licença
+
+Projeto pessoal — código livre para estudo e referência.

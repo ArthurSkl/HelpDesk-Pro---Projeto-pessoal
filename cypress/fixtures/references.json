@@ -1,0 +1,23 @@
+{
+  "statuses": [
+    { "id": 1, "name": "Aberto" },
+    { "id": 2, "name": "Em Atendimento" },
+    { "id": 3, "name": "Resolvido" },
+    { "id": 4, "name": "Encerrado" }
+  ],
+  "priorities": [
+    { "id": 1, "name": "Baixa" },
+    { "id": 2, "name": "Média" },
+    { "id": 3, "name": "Alta" }
+  ],
+  "categories": [
+    { "id": 1, "name": "Hardware" },
+    { "id": 2, "name": "Software" },
+    { "id": 3, "name": "Rede" }
+  ],
+  "users": [
+    { "id": 1, "name": "Gestor", "email": "gestor@helpdesk.com", "role": "admin" },
+    { "id": 2, "name": "Maria Souza", "email": "maria@empresa.com", "role": "requester" },
+    { "id": 3, "name": "João Lima", "email": "joao@empresa.com", "role": "requester" }
+  ]
+}

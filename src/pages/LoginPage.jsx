@@ -66,11 +66,11 @@ function LoginPage() {
     setSubmitting(true)
     try {
       await authApi.register({ name: nome, email, password })
-      setMessage('Conta criada com sucesso! Faça login.')
       setNome('')
       setEmail('')
       setPassword('')
       await alternarModo()
+      setMessage('Conta criada com sucesso! Faça login.')
     } catch (err) {
       setMessage(err.message)
     } finally {
