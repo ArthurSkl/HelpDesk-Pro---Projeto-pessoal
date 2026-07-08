@@ -4,15 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "cy:open": "cypress open",
-  "cy:run": "cypress run"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
+  },
   "dependencies": {
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
