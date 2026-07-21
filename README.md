@@ -1,150 +1,138 @@
-# HelpDesk Pro
+HelpDesk Pro
+Sistema web de gerenciamento de chamados desenvolvido como projeto de portfólio e entrevista técnica. A aplicação foi estruturada para demonstrar conceitos de desenvolvimento full stack, incluindo autenticação, CRUD completo, integração com API, proteção de rotas e testes end-to-end 
+.
 
-Sistema corporativo de gerenciamento de chamados (helpdesk/ticketing) com arquitetura REST + React. Construído como projeto para entrevista, demonstrando boas práticas de desenvolvimento full-stack.
+Visão geral
+O HelpDesk Pro simula um ambiente corporativo de atendimento interno ou suporte técnico, permitindo que usuários façam login, consultem chamados, acompanhem status e realizem operações de criação, edição, visualização e remoção de tickets 
+.
 
----
+No frontend, o projeto utiliza React com Vite e navegação baseada em React Router DOM. O ambiente de desenvolvimento também está configurado para consumir uma API backend local por meio de proxy /api apontando para a porta 3001 
+.
 
-## Stack
+Stack utilizada
+Camada	Tecnologia
+Frontend	React
+Build e desenvolvimento	Vite
+Roteamento	React Router DOM
+Estilização	CSS puro
+Sessão no cliente	localStorage
+Integração com backend	API local via proxy /api
+Testes	Cypress
+Funcionalidades
+Login e cadastro de usuários 
 
-| Camada | Tecnologia |
-|--------|-----------|
-| **Frontend** | React 19 + Vite 8 + React Router 7 |
-| **Backend** | Express 5 + PostgreSQL |
-| **Autenticação** | bcryptjs (hash de senha) |
-| **Testes** | Cypress 15 (E2E com mocks) |
-| **Proxy** | Vite dev server → backend (`/api` → `:3001`) |
+Persistência de sessão no navegador com localStorage 
 
----
+Proteção de rotas para páginas autenticadas 
 
-## Funcionalidades
+Dashboard com métricas por status e listagem de chamados 
 
-- **Autenticação** — Login e cadastro com bcryptjs, sessão via localStorage, rotas protegidas
-- **Dashboard** — Métricas em tempo real (abertos, em atendimento, resolvidos, encerrados), filtro por status, tabela com badges coloridas
-- **CRUD completo** — Criar, editar, visualizar e remover chamados com validação de campos
-- **Referências dinâmicas** — Status, prioridades, categorias e usuários carregados da API
-- **Interface moderna** — Tema escuro corporativo, glassmorphism, animações CSS, responsivo
-- **Código do chamado** — Geração automática no formato `TKT-001`, `TKT-002`...
+Filtro de chamados por status 
 
----
+CRUD completo de tickets 
 
-## Estrutura do projeto
+Carregamento dinâmico de status, prioridades, categorias e usuários 
 
-```
+Interface preparada para testes E2E com seletores data-cy 
+
+Estrutura do projeto
+bash
 HelpDesk Pro/
 ├── backend/
-│   ├── controllers/       # Lógica das rotas (tickets, auth, references)
-│   ├── routes/            # Definição das rotas REST
-│   ├── src/
-│   │   ├── config/db.js   # Pool PostgreSQL
-│   │   └── models/        # Ticket, User, Reference (queries SQL)
-│   └── seed.js            # Cria usuário gestor no banco
 ├── src/
-│   ├── api/index.js       # Cliente HTTP (request, ticketsApi, authApi, referencesApi)
-│   ├── components/        # ProtectedRoute
-│   ├── pages/             # LoginPage, DashboardPage, TicketFormPage, TicketDetailsPage
-│   ├── App.css            # Estilos globais (1200+ linhas)
-│   ├── index.css          # Fonte Inter, scrollbar customizada
-│   └── main.jsx           # Entry point React
+│   ├── components/
+│   │   └── ProtectedRoute.jsx
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── DashboardPage.jsx
+│   │   ├── TicketFormPage.jsx
+│   │   └── TicketDetailsPage.jsx
+│   ├── index.css
+│   └── main.jsx
 ├── cypress/
-│   ├── e2e/               # Testes: auth, dashboard, tickets, navigation
-│   ├── fixtures/          # Dados mock (tickets, ticket, references, auth)
-│   └── support/           # Comandos customizados (login, intercepts)
-├── cypress.config.js      # Config Cypress (baseUrl, viewport)
-├── vite.config.js         # Proxy /api → backend :3001
-└── package.json           # Scripts dev, build, cy:open, cy:run
-```
+├── vite.config.js
+└── start-project.txt
+Como executar
+1. Frontend
+Na raiz do projeto:
 
----
+bash
+npm install
+npm run dev
+A aplicação frontend deve abrir em:
 
-## Como rodar
+bash
+http://localhost:5173/
+As instruções operacionais anexadas também indicam esse mesmo fluxo de execução 
+.
 
-### 1. Banco de dados
+2. Backend
+Na pasta backend:
 
-Crie um banco PostgreSQL chamado `Help-Desk` e execute o script de schema (tabelas `users`, `tickets`, `ticket_statuses`, `ticket_priorities`, `ticket_categories`).
-
-```bash
-# Config padrão esperada:
-# host: localhost
-# port: 5432
-# user: postgres
-# password: 123
-# database: Help-Desk
-```
-
-### 2. Backend
-
-```bash
+bash
 cd backend
 npm install
-npm run seed    # Cria gestor@helpdesk.com / 123456
-npm start       # Inicia na porta 3001
-```
+npm run dev
+A API backend deve estar disponível em:
 
-### 3. Frontend
+bash
+http://localhost:3001/
+O frontend está configurado para redirecionar chamadas /api para essa porta durante o desenvolvimento 
+.
 
-```bash
-# Na raiz do projeto
-npm install
-npm run dev     # Inicia na porta 5173
-```
+3. Testes com Cypress
+Na raiz do projeto:
 
-Acesse `http://localhost:5173` e faça login com:
+bash
+npm install cypress --save-dev
+npx cypress open
+Ou para rodar no terminal:
 
-> **E-mail:** gestor@helpdesk.com  
-> **Senha:** 123456
+bash
+npx cypress run
+Os testes devem ser executados a partir da raiz do projeto, e o frontend precisa estar ativo para que o fluxo funcione corretamente 
+.
 
----
+Fluxo da aplicação
+O usuário acessa a tela de login ou cadastro 
+.
 
-## Testes
+Após autenticação, os dados do usuário são salvos no navegador 
+.
 
-Os testes usam `cy.intercept()` para mockar todas as APIs — rodam **sem dependência do backend**.
+O sistema libera o acesso às rotas protegidas 
+.
 
-```bash
-# Terminal (headless)
-npm run cy:run
+O dashboard carrega os chamados e exibe métricas operacionais 
+.
 
-# Interface gráfica
-npm run cy:open
-```
+O usuário pode criar, editar, visualizar ou remover tickets 
+.
 
-### Cobertura (47 testes)
+Autenticação e sessão
+O projeto utiliza autenticação integrada ao backend e persistência de sessão no frontend com localStorage. Após o login, o objeto helpdesk_user é armazenado no navegador e utilizado para manter o contexto do usuário autenticado e controlar o acesso às páginas protegidas 
+.
 
-| Arquivo | Testes | O que valida |
-|---------|--------|--------------|
-| `auth.cy.js` | 14 | Login, register, logout, toggle, validações, redirect de rotas protegidas, erro de credenciais, e-mail duplicado, senha curta |
-| `dashboard.cy.js` | 15 | Métricas, filtro por cada status, contagem, badges, navegação para novo/detalhes/edição, remover |
-| `navigation.cy.js` | 7 | Redirect `/` → `/login`, 404, sessão entre páginas, localStorage inválido, JSON malformado |
-| `tickets.cy.js` | 11 | CRUD completo: criar com selects populados, editar com dados carregados, visualizar detalhes, remover |
+Esse mecanismo não substitui o banco de dados. O banco armazena os dados persistentes do sistema, enquanto o localStorage é usado apenas para manter a sessão e facilitar a navegação no cliente 
+.
 
----
+Páginas principais
+LoginPage
+Responsável pelos fluxos de login e cadastro, validação básica dos campos, mensagens de retorno e armazenamento do usuário autenticado 
+.
 
-## API
+DashboardPage
+Exibe a lista de chamados, métricas por status, filtros de visualização, logout e ações principais sobre cada ticket 
+.
 
-### Autenticação
-```
-POST /auth/login    { email, password }   → { ok, user }
-POST /auth/register { name, email, password, role? } → { ok, user }
-```
+TicketFormPage
+Centraliza a criação e edição de chamados, carregando dados auxiliares da API e enviando o payload tratado para o backend 
+.
 
-### Tickets
-```
-GET    /tickets       → Ticket[]
-GET    /tickets/:id   → { ok, ticket }
-POST   /tickets       → { ok, ticket }
-PUT    /tickets/:id   → { ok, ticket }
-DELETE /tickets/:id   → { ok, message }
-```
+TicketDetailsPage
+Mostra os detalhes completos de um chamado, incluindo informações operacionais e ações para voltar, editar ou remover 
+.
 
-### Referências
-```
-GET /references/statuses
-GET /references/priorities
-GET /references/categories
-GET /references/users
-```
-
----
-
-## Licença
-
-Projeto pessoal — código livre para estudo e referência.
+Objetivo do projeto
+O HelpDesk Pro foi construído para demonstrar capacidade de desenvolver uma aplicação com interface moderna, navegação entre páginas, integração com API, controle de sessão, estrutura de CRUD e preocupação com testabilidade. Como projeto de portfólio, ele evidencia competências relevantes para vagas júnior em desenvolvimento web e vagas de tester júnior.
+.
