@@ -5,9 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "node src/server.js",
-    "schema": "psql -U postgres -d Help-Desk -f schema.sql",
+    "setup-db": "node setup-db.js",
     "seed": "node seed.js",
-    "setup": "npm run schema && npm run seed"
+    "seed-tickets": "node seed-tickets.js"
   },
   "keywords": [],
   "author": "",

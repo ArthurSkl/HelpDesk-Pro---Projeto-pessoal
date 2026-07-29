@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ticketsApi, referencesApi } from '../api'
+import { useUsuario } from '../hooks/useUsuario'
 
 function TicketFormPage() {
   const { id } = useParams()
@@ -16,7 +17,8 @@ function TicketFormPage() {
   const [categories, setCategories] = useState([])
   const [users, setUsers] = useState([])
 
-  const usuarioLogado = JSON.parse(localStorage.getItem('helpdesk_user')) || {}
+  const { getUsuario } = useUsuario()
+  const usuarioLogado = getUsuario() || {}
 
   const defaultRequesterId = usuarioLogado.id?.toString() || '1'
 

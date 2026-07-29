@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ticketsApi } from '../api'
+import { useUsuario } from '../hooks/useUsuario'
 
 function DashboardSkeleton() {
   return (
@@ -35,7 +36,10 @@ function DashboardPage() {
   const [error, setError] = useState(null)
   const [statusFiltro, setStatusFiltro] = useState('Todos')
 
-  const carregar = () => {
+  const { getUsuario } = useUsuario()
+  const usuarioLogado = getUsuario()
+
+  const carregar = useCallback(() => {
     setLoading(true)
     ticketsApi.list()
       .then((data) => {
@@ -43,11 +47,11 @@ function DashboardPage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
-  }
+  }, [])
 
-  useEffect(carregar, [])
-
-  const usuarioLogado = JSON.parse(localStorage.getItem('helpdesk_user'))
+  useEffect(() => {
+    carregar()
+  }, [carregar])
 
   const metricas = useMemo(() => {
     const abertos = tickets.filter((t) => t.status_name === 'Aberto').length
@@ -123,22 +127,22 @@ function DashboardPage() {
 
       <section className="metrics">
         <div className="metric-card" data-cy="metric-abertos">
-          <span>📋 Abertos</span>
+          <span>Abertos</span>
           <strong>{metricas.abertos}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-atendimento">
-          <span>🔄 Em atendimento</span>
+          <span>Em atendimento</span>
           <strong>{metricas.atendimento}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-resolvidos">
-          <span>✅ Resolvidos</span>
+          <span>Resolvidos</span>
           <strong>{metricas.resolvidos}</strong>
         </div>
 
         <div className="metric-card" data-cy="metric-encerrados">
-          <span>📁 Encerrados</span>
+          <span>Encerrados</span>
           <strong>{metricas.encerrados}</strong>
         </div>
       </section>

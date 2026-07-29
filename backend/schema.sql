@@ -1,9 +1,7 @@
 -- ============================================================
 -- HelpDesk Pro - Database Schema
--- Execute this file to create all tables and seed lookup data
 -- ============================================================
 
--- Users
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -14,27 +12,23 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Ticket statuses
 CREATE TABLE IF NOT EXISTS ticket_statuses (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     sort_order INTEGER DEFAULT 0
 );
 
--- Ticket priorities
 CREATE TABLE IF NOT EXISTS ticket_priorities (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     level INTEGER DEFAULT 0
 );
 
--- Ticket categories
 CREATE TABLE IF NOT EXISTS ticket_categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Tickets
 CREATE TABLE IF NOT EXISTS tickets (
     id SERIAL PRIMARY KEY,
     code VARCHAR(20),
@@ -49,28 +43,4 @@ CREATE TABLE IF NOT EXISTS tickets (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- ============================================================
--- Seed lookup data
--- ============================================================
 
-INSERT INTO ticket_statuses (name, sort_order) VALUES
-  ('Aberto', 1),
-  ('Em andamento', 2),
-  ('Resolvido', 3),
-  ('Fechado', 4)
-ON CONFLICT DO NOTHING;
-
-INSERT INTO ticket_priorities (name, level) VALUES
-  ('Baixa', 1),
-  ('Média', 2),
-  ('Alta', 3),
-  ('Crítica', 4)
-ON CONFLICT DO NOTHING;
-
-INSERT INTO ticket_categories (name) VALUES
-  ('Suporte Técnico'),
-  ('Financeiro'),
-  ('Recursos Humanos'),
-  ('Infraestrutura'),
-  ('Outros')
-ON CONFLICT DO NOTHING;

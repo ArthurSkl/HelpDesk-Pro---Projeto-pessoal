@@ -23,6 +23,7 @@ No frontend, a aplicação utiliza **React** com **Vite** e navegação via **Re
 | Sessão no cliente | `localStorage` |
 | Backend | Node.js / API REST |
 | Integração | Proxy `/api` para backend local |
+| Banco de Dados | PostgreSQL |
 | Testes E2E | Cypress |
 | Qualidade de código | ESLint |
 | Automação | GitHub Actions |
@@ -67,8 +68,11 @@ HelpDesk Pro - Projeto pessoal/
 │   ├── routes/                      # Endpoints da API
 │   ├── src/                         # Configurações e módulos internos
 │   ├── .env                         # Variáveis de ambiente do backend
+│   ├── .env.example                 # Template de env
 │   ├── package.json
 │   ├── package-lock.json
+│   ├── schema.sql                   # DDL das tabelas
+│   ├── setup-db.js                  # Script de setup do banco (Node)
 │   └── seed.js                      # Script de seed do banco
 ├── cypress/
 │   ├── e2e/                         # Testes end-to-end
@@ -125,7 +129,36 @@ cd backend
 npm install
 ```
 
-### 4. Iniciar o backend
+### 4. Configurar banco de dados
+
+**Pré-requisito:** PostgreSQL instalado e rodando.
+
+O arquivo `backend/.env` já contém as credenciais padrão:
+
+```env
+PGHOST=localhost
+PGPORT=5432
+PGUSER=postgres
+PGPASSWORD=123
+PGDATABASE=Help-Desk
+```
+
+Crie o banco de dados (caso não exista):
+
+```bash
+createdb -U postgres "Help-Desk"
+```
+
+Em seguida, execute o setup que cria as tabelas e insere o usuário de teste:
+
+```bash
+cd backend
+npm run setup-db
+```
+
+> O setup cria um usuário admin: `gestor@helpdesk.com` / `123456`
+
+### 5. Iniciar o backend
 
 Ainda dentro da pasta `backend`:
 
@@ -139,7 +172,7 @@ A API deve ficar disponível em:
 http://localhost:3001/
 ```
 
-### 5. Iniciar o frontend
+### 6. Iniciar o frontend
 
 Em outro terminal, na raiz do projeto:
 
@@ -153,7 +186,7 @@ A aplicação frontend deve abrir em:
 http://localhost:5173/
 ```
 
-### 6. Executar testes com Cypress
+### 7. Executar testes com Cypress
 
 Na raiz do projeto:
 
