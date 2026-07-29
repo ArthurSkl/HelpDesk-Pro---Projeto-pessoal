@@ -13,7 +13,7 @@ function LoginPage() {
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [animating, setAnimating] = useState(false)
-  const formRef = useRef(null)
+  const formWrapRef = useRef(null)
 
   useEffect(() => {
     if (location.state?.message) {
@@ -82,101 +82,118 @@ function LoginPage() {
     if (animating) return
     setAnimating(true)
     setMessage('')
-
-    if (formRef.current) {
-      formRef.current.style.transition = 'all 0.25s ease'
-      formRef.current.style.opacity = '0'
-      formRef.current.style.transform = 'translateY(8px)'
+    if (formWrapRef.current) {
+      formWrapRef.current.classList.add('form-exit')
     }
 
-    await new Promise(r => setTimeout(r, 200))
+    await new Promise(r => setTimeout(r, 250))
     setModo(modo === 'login' ? 'register' : 'login')
-    await new Promise(r => setTimeout(r, 50))
-
-    if (formRef.current) {
-      formRef.current.style.opacity = '1'
-      formRef.current.style.transform = 'translateY(0)'
+    if (formWrapRef.current) {
+      formWrapRef.current.classList.remove('form-exit')
+      formWrapRef.current.classList.add('form-enter')
     }
 
-    setTimeout(() => setAnimating(false), 250)
+    await new Promise(r => setTimeout(r, 300))
+    if (formWrapRef.current) {
+      formWrapRef.current.classList.remove('form-enter')
+    }
+    setAnimating(false)
   }
 
   return (
     <main className="app login-page" data-cy="login-page">
-      <section className="login-card">
-        <p className="eyebrow">Projeto para entrevista</p>
-        <h1>HelpDesk Pro</h1>
-        <p className="subtitle" key={modo}>
-          {modo === 'login'
-            ? 'Faça login para gerenciar seus chamados.'
-            : 'Crie sua conta e comece a usar o sistema.'}
-        </p>
+      <div className="login-bg-orbs" aria-hidden="true">
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+      </div>
 
-        <div ref={formRef} style={{ transition: 'all 0.25s ease' }}>
+      <section className="login-card">
+        <div className="login-header">
+          <p className="eyebrow">Projeto para entrevista</p>
+          <h1>HelpDesk Pro</h1>
+          <p className="subtitle" key={modo}>
+            {modo === 'login'
+              ? 'Faça login para gerenciar seus chamados.'
+              : 'Crie sua conta e comece a usar o sistema.'}
+          </p>
+        </div>
+
+        <div className="login-form-wrap" ref={formWrapRef}>
           {modo === 'login' ? (
             <form onSubmit={handleLogin} className="login-form">
-              <label htmlFor="email">E-mail</label>
-              <input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={submitting}
-                data-cy="login-email"
-              />
+              <div className="field">
+                <input
+                  id="email"
+                  type="email"
+                  placeholder=" "
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={submitting}
+                  data-cy="login-email"
+                />
+                <label htmlFor="email">E-mail</label>
+              </div>
 
-              <label htmlFor="password">Senha</label>
-              <input
-                id="password"
-                type="password"
-                placeholder="******"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={submitting}
-                data-cy="login-password"
-              />
+              <div className="field">
+                <input
+                  id="password"
+                  type="password"
+                  placeholder=" "
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={submitting}
+                  data-cy="login-password"
+                />
+                <label htmlFor="password">Senha</label>
+              </div>
 
-              <button type="submit" disabled={submitting} data-cy="login-submit">
+              <button type="submit" className="btn-primary" disabled={submitting} data-cy="login-submit">
                 {submitting ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegister} className="login-form">
-              <label htmlFor="regNome">Nome</label>
-              <input
-                id="regNome"
-                type="text"
-                placeholder="Seu nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                disabled={submitting}
-                data-cy="reg-name"
-              />
+              <div className="field">
+                <input
+                  id="regNome"
+                  type="text"
+                  placeholder=" "
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  disabled={submitting}
+                  data-cy="reg-name"
+                />
+                <label htmlFor="regNome">Nome</label>
+              </div>
 
-              <label htmlFor="regEmail">E-mail</label>
-              <input
-                id="regEmail"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={submitting}
-                data-cy="reg-email"
-              />
+              <div className="field">
+                <input
+                  id="regEmail"
+                  type="email"
+                  placeholder=" "
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={submitting}
+                  data-cy="reg-email"
+                />
+                <label htmlFor="regEmail">E-mail</label>
+              </div>
 
-              <label htmlFor="regPassword">Senha</label>
-              <input
-                id="regPassword"
-                type="password"
-                placeholder="Mínimo 4 caracteres"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={submitting}
-                data-cy="reg-password"
-              />
+              <div className="field">
+                <input
+                  id="regPassword"
+                  type="password"
+                  placeholder=" "
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={submitting}
+                  data-cy="reg-password"
+                />
+                <label htmlFor="regPassword">Senha</label>
+              </div>
 
-              <button type="submit" disabled={submitting} data-cy="reg-submit">
+              <button type="submit" className="btn-primary" disabled={submitting} data-cy="reg-submit">
                 {submitting ? 'Criando...' : 'Criar Conta'}
               </button>
             </form>
@@ -184,7 +201,7 @@ function LoginPage() {
         </div>
 
         {message && (
-          <p className="message" data-cy="login-message" key={message}>
+          <p className="login-message" data-cy="login-message" key={message}>
             {message}
           </p>
         )}

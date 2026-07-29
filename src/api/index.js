@@ -1,10 +1,15 @@
 const API_BASE = '/api';
 
 async function request(endpoint, options = {}) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    ...options,
-  });
+  let res
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      ...options,
+    })
+  } catch {
+    throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando.')
+  }
 
   if (!res.ok) {
     const text = await res.text()

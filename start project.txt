@@ -31,7 +31,7 @@ COMANDOS DO PROJETO HELPDESK PRO
   cd "E:\Git Desk\HelpDesk Pro - Projeto pessoal"
 
 - Instalar Cypress:
-  npm install cypress --save-dev
+  npm install cypress --save-devnpm install cypress --save-dev
 
 - Abrir a interface do Cypress:
   npx cypress open
