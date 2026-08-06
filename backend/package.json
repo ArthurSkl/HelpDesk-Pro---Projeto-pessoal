@@ -7,7 +7,8 @@
     "dev": "node src/server.js",
     "setup-db": "node setup-db.js",
     "seed": "node seed.js",
-    "seed-tickets": "node seed-tickets.js"
+    "seed-tickets": "node seed-tickets.js",
+    "fix-encoding": "node fix-encoding.js"
   },
   "keywords": [],
   "author": "",
